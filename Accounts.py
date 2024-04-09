@@ -1,37 +1,53 @@
+from flask import Flask, jsonify
 from eth_account import Account
 from bitcoin import *
 from tron_address_converter import TronConverter
 from base58 import b58decode, b58encode
 
+import Gen_private_key
 
-# Example private key
-private_key = '77136ff573b032b47590efe38521c04baaa93f6ffcffaacf1d8637d6bfcf74ba'
+app = Flask(__name__)
 
-# Ethereum (ETH)
-eth_account = Account.from_key(private_key)
-eth_address = eth_account.address
-print(f"Ethereum Address: {eth_address}")
+def get_accounts(user_number):
+    # Example private key
+    private_key = Gen_private_key.get_private_key(user_number)
 
-# Bitcoin (BTC)
-btc_private_key = bytes.fromhex(private_key)
-btc_address = privkey_to_address(btc_private_key)
-print(f"Bitcoin Address: {btc_address}")
+    # Ethereum (ETH)
+    eth_account = Account.from_key(private_key)
+    eth_address = eth_account.address
 
-# Bsc (Bsc)
-Bsc_account = Account.from_key(private_key)
-Bsc_address = Bsc_account.address
-print(f"Bsc Address: {Bsc_address}")
+    # Bitcoin (BTC)
+    btc_private_key = bytes.fromhex(private_key)
+    btc_address = privkey_to_address(btc_private_key)
 
-# Tron (Trc)
-converter = TronConverter()
-tron_address = converter.from_hex(eth_address)
-print(f'Tron Address : {tron_address}')
+    # Bsc (Bsc)
+    Bsc_account = Account.from_key(private_key)
+    Bsc_address = Bsc_account.address
 
-# Solana
-b58_private_key = b58encode(private_key)
-keypair = b58decode(b58_private_key)
-sol_priv_key = keypair[:32]
-sol_pub_key = keypair[32:]
+    # Tron (Trc)
+    converter = TronConverter()
+    tron_address = converter.from_hex(eth_address)
 
-sol_address = b58encode(sol_pub_key).decode()
-print(f'Sol Address : {sol_address}')
+    # Solana
+    b58_private_key = b58encode(private_key)
+    keypair = b58decode(b58_private_key)
+    sol_priv_key = keypair[:32]
+    sol_pub_key = keypair[32:]
+    sol_address = b58encode(sol_pub_key).decode()
+
+    # Return the addresses as a dictionary
+    return {
+        "eth_address": eth_address,
+        "btc_address": btc_address,
+        "bsc_address": Bsc_address,
+        "tron_address": tron_address,
+        "sol_address": sol_address
+    }
+
+@app.route('/get_accounts/<int:user_number>', methods=['GET'])
+def get_accounts_endpoint(user_number):
+    accounts = get_accounts(user_number)
+    return jsonify(accounts)
+
+if __name__ == '__main__':
+    app.run(debug=True)
