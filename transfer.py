@@ -74,4 +74,4 @@ def Sol_Transfer(user_number, recipient: str, amount: float):
     transfer_ix = transfer(TransferParams(from_pubkey=sender.pubkey(), to_pubkey=recipient, lamports= amount * 1_000_000))
     txn = Transaction().add(transfer_ix)
     solana_client = Client("https://api.mainnet-beta.solana.com")
-    solana_client.send_transaction(txn, sender)
+    return solana_client.send_transaction(txn, sender)
