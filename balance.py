@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 moralis_api_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImZlYjI1ZTAxLWIwZTktNGQ0Ny1hN2FjLWIwMTJlMjYxYmE5MCIsIm9yZ0lkIjoiMjE5MjcxIiwidXNlcklkIjoiMjE4OTczIiwidHlwZUlkIjoiZTUyZjM5NWQtNDZlZC00YzI5LTgwNTQtYmVlNGJlNzQ1Yjc0IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MTE4MzkzNzMsImV4cCI6NDg2NzU5OTM3M30.4bP6Vsi81YPRGmvVz4yWgh_7EiBTX4-pr8FRbTL82tw'
 
-def balance_BTC(addr):
+def balance_BTC(addr : str):
     try:
         total = blockcypher.get_total_balance(addr)
         return total
@@ -20,14 +20,14 @@ def balance_BTC(addr):
         total = AddressBalance().action('btc', addr)
         return total
 
-def balance_ETH(addr):
+def balance_ETH(addr : str):
     params = {
         'chain' :'eth',
         'address' : addr }
     result1 = evm_api.balance.get_native_balance(api_key= moralis_api_key, params= params, )
     return result1
 
-def balance_SOL(addr):
+def balance_SOL(addr : str):
     params = {
         'network' :'mainnet',
         'address' : addr }
