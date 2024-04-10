@@ -12,6 +12,3 @@ def get_private_key(user_number):
     key = Web3.to_hex(acc.key)
     private_key = key[2:]
     return  private_key
-
-# Example usage
-get_private_key(0) # Generate private key for the first user
