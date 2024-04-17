@@ -11,3 +11,4 @@ web3
 loguru
 solana
 solders
+gunicorn
