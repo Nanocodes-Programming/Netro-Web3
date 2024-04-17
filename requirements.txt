@@ -1,0 +1,13 @@
+Flask
+eth-account
+bitcoin
+tron-address-converter
+base58
+tronpy
+moralis
+blockcypher
+moneywagon
+web3
+loguru
+solana
+solders
