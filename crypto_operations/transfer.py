@@ -1,4 +1,4 @@
-from bitcoinlib.wallets import Wallet, wallet_create_or_open
+from bitcoinlib.wallets import wallet_create_or_open
 from bitcoinlib.transactions import Transaction
 from web3 import Web3
 from eth_account import Account
@@ -7,21 +7,13 @@ from tronpy.keys import PrivateKey
 from tronpy.providers import HTTPProvider
 from tronpy import Tron
 from solana.rpc.api import Client
-from solders.message import Message # type: ignore
 from solders.transaction import Transaction # type: ignore
 from solders.system_program import transfer, TransferParams
-from solders.pubkey import Pubkey as PublicKey # type: ignore
-from solders.keypair import Keypair # type: ignore
-from solders.hash import Hash # type: ignore
-from solders.commitment_config import CommitmentLevel # type: ignore
-from solders.rpc.config import RpcSendTransactionConfig # type: ignore
-from solders.rpc.requests import SendLegacyTransaction # type: ignore
 from base58 import b58decode, b58encode
+from utils.gen_private_key import get_private_key
 
-
-import Gen_private_key
 def BTC_Transfer(user_number, amount : float, recipient : str ):
-    private_key = Gen_private_key.get_private_key(user_number)
+    private_key = get_private_key(user_number)
     wallet = wallet_create_or_open('MyWallet', keys=private_key)
     wallet.utxos_update(networks="testnet") # Update UTXOs
     wallet.scan() # Scan the blockchain for transactions
@@ -35,7 +27,7 @@ def ETH_Transfer(user_number, amount : float, recipient : str):
     w3 = Web3(Web3.HTTPProvider('https://mainnet.infura.io/v3/4f32e758e9ae4046ba13e6a4b00a2e88'))
     if not w3.is_connected():
         raise Exception("Node not connected")
-    private_key = Gen_private_key.get_private_key(user_number)
+    private_key = get_private_key(user_number)
     account = Account.from_key(private_key)
     amount = w3.to_wei(amount, 'ether')
     nonce = w3.eth.get_transaction_count(account.address)
@@ -56,7 +48,7 @@ def ETH_Transfer(user_number, amount : float, recipient : str):
 def Tron_Transfer(user_number, recipient: str, amount: float, fee_limit=35):
     provider = HTTPProvider(api_key='d4e77476-2ae9-426e-b3aa-0488b3667048')
     client = Tron(provider=provider)
-    private_key = Gen_private_key.get_private_key(user_number)
+    private_key = get_private_key(user_number)
     private_key = PrivateKey(bytes.fromhex(private_key))
     public_key = private_key.public_key.to_base58check_address()
     block_explorer_tx = 'https://tronscan.org/#/transaction/'
@@ -77,7 +69,7 @@ def Tron_Transfer(user_number, recipient: str, amount: float, fee_limit=35):
     return tx_id, 'SUCCESS', result
 
 def Sol_Transfer(user_number, recipient: str, amount: float):
-    private_key = Gen_private_key.get_private_key(user_number)
+    private_key = get_private_key(user_number)
     b58_private_key = b58encode(private_key)
     keypair = b58decode(b58_private_key)
     sol_pub_key = keypair[32:]
@@ -85,3 +77,37 @@ def Sol_Transfer(user_number, recipient: str, amount: float):
     txn = Transaction().add(transfer_ix)
     solana_client = Client("https://api.mainnet-beta.solana.com")
     return solana_client.send_transaction(txn, sol_pub_key)
+
+def sendUSDT(user_number, recipient: str, amount: float, fee_limit=35):
+
+    def coin_to_sun( amount: float):
+        return int(amount * 1_000_000)
+
+    provider = HTTPProvider(api_key='d4e77476-2ae9-426e-b3aa-0488b3667048')
+    coinwatch_api_key = 'a697c55a-fc6e-4d1f-8ca3-9c6639aabf39'
+    client = Tron(provider=provider)
+    private_key = get_private_key(user_number)
+    private_key = PrivateKey(bytes.fromhex(private_key))
+    public_key = private_key.public_key.to_base58check_address()
+    block_explorer_tx = 'https://tronscan.org/#/transaction/'
+    processing = False
+    logger.info('Tron chain loaded! Wallet address: {}'.format(public_key))
+    logger.info('Sending {} USDT to {}'.format(amount, recipient))
+
+    contract = client.get_contract('TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t')
+    txn = (
+        contract.functions.transfer(recipient, coin_to_sun(amount))
+        .with_owner(public_key)
+        .fee_limit(coin_to_sun(fee_limit))
+        .build()
+        .sign(private_key)
+    )
+    tx_id = txn.txid
+    logger.info('Transaction built!')
+
+    result = txn.broadcast().wait()
+    logger.info('Transaction sent with status {}! URL: {}{}'.format(
+        result['receipt']['result'], block_explorer_tx, tx_id)
+    )
+
+    return tx_id, result['receipt']['result'], result

@@ -1,12 +1,12 @@
 import requests
 import json
-import USDT_transfer
+from crypto_operations.transfer import sendUSDT
 
 
 rate = 5
 
 def USDTNGN(user_number, amount_udst: float, account_number : str, account_bank_code :str):
-    USDT_transfer.sendUSDT(user_number, 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', amount_udst)
+    sendUSDT(user_number, 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', amount_udst)
     secret_key = 'FLWSECK_TEST-87b8f0592c962c13a7cd4d519a897669-X'
 
 # Flutterwave API endpoint for transfers
@@ -40,7 +40,3 @@ def USDTNGN(user_number, amount_udst: float, account_number : str, account_bank_
         print("Failed to initiate transfer.")
         print(response.text)
 
-
-
-
-USDTNGN(1, 3, '1234567890', '044')

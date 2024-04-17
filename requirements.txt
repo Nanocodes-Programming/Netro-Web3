@@ -12,3 +12,4 @@ loguru
 solana
 solders
 gunicorn
+requests
