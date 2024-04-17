@@ -41,7 +41,7 @@ def get_crypto_prices():
             price_USDT = entry['quote']['NGN']["price"]
             percentage_USDT = entry['quote']['NGN']["percent_change_24h"]
 
-        response = session.get(url, params={'start': '15', 'limit': '1', 'convert': 'NGN'})
+        response = session.get(url, params={'start': '13', 'limit': '1', 'convert': 'NGN'})
         data = json.loads(response.text)
         for entry in data['data']:
             Name_TRX = entry['name']
