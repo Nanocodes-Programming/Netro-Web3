@@ -7,8 +7,15 @@ from tronpy.keys import PrivateKey
 from tronpy.providers import HTTPProvider
 from tronpy import Tron
 from solana.rpc.api import Client
+from solders.message import Message, MessageHeader # type: ignore
 from solders.transaction import Transaction # type: ignore
 from solders.system_program import transfer, TransferParams
+from solders.pubkey import Pubkey as PublicKey # type: ignore
+from solders.keypair import Keypair # type: ignore
+from solders.hash import Hash # type: ignore
+from solders.commitment_config import CommitmentLevel # type: ignore
+from solders.rpc.config import RpcSendTransactionConfig # type: ignore
+from solders.rpc.requests import SendLegacyTransaction # type: ignore
 from base58 import b58decode, b58encode
 from utils.gen_private_key import get_private_key
 
@@ -70,13 +77,31 @@ def Tron_Transfer(user_number, recipient: str, amount: float, fee_limit=35):
 
 def Sol_Transfer(user_number, recipient: str, amount: float):
     private_key = get_private_key(user_number)
-    b58_private_key = b58encode(private_key)
-    keypair = b58decode(b58_private_key)
-    sol_pub_key = keypair[32:]
-    transfer_ix = transfer(TransferParams(from_pubkey=sol_pub_key, to_pubkey=recipient, lamports= amount * 1_000_000))
-    txn = Transaction().add(transfer_ix)
+    private_key_bytes = bytes.fromhex(private_key)
+    # Ensure the private key bytes are 32 bytes long
+    if len(private_key_bytes) != 32:
+        raise ValueError("Private key must be 32 bytes long")
+    # Create a Keypair from the 32-byte private key
+    sender_keypair = Keypair.from_seed(private_key_bytes)
+    # Correctly derive the public key from the Keypair
+    sender_pubkey = sender_keypair.pubkey()
+    # Create a Message instance
+    message = Message(
+        # account_keys=[sender_pubkey, PublicKey.from_string(recipient)],
+        instructions=[transfer(TransferParams(from_pubkey=sender_pubkey, to_pubkey=PublicKey.from_string(recipient), lamports=amount * 1_000_000))],
+    )
+    # Get a recent blockhash
     solana_client = Client("https://api.mainnet-beta.solana.com")
-    return solana_client.send_transaction(txn, sol_pub_key)
+    # Get the latest blockhash
+    latest_blockhash_resp = solana_client.get_latest_blockhash()
+    recent_blockha = getattr(latest_blockhash_resp.value, 'blockhash', None)
+    # Assuming recent_blockhash is already obtained as shown in your code
+    # Create a Transaction instance
+    txn = Transaction([sender_keypair],message,recent_blockha)
+    # Sign the transaction with the recent_blockhash
+    txn.sign([sender_keypair], recent_blockha)
+    # Send the transaction
+    return solana_client.send_transaction(txn)
 
 def sendUSDT(user_number, recipient: str, amount: float, fee_limit=35):
 

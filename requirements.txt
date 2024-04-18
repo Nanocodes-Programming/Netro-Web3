@@ -7,6 +7,7 @@ tronpy
 moralis
 blockcypher
 moneywagon
+bitcoinlib
 web3
 loguru
 solana

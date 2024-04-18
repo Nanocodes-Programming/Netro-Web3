@@ -62,10 +62,6 @@ def trx_to_usdt(user_number, amount_trx: float, fee_limit=250):
 
         return amount * one_trx
 
-
-
-
-
     contract = client.get_contract(Contract.SUN_SWAP_V2)
 
     time_window = datetime.datetime.now() + datetime.timedelta(seconds=60)
@@ -131,7 +127,12 @@ def SOL_USDT(user_number, amount : float) :
     response = requests.post(url, headers=headers, data=json.dumps(data))
     dat = json.loads(response.text)
     recipient = dat['payinAddress']
+    receiving_amount = dat['toAmount']
+    track =  dat['id']
+    print(" You will be receiving : {} Usdt".format(receiving_amount))
     transfer.Sol_Transfer(user_number, amount, recipient)
+    return track, response.text
+
 
 
 
@@ -169,7 +170,12 @@ def BTC_USDT(user_number, amount : float) :
     response = requests.post(url, headers=headers, data=json.dumps(data))
     dat = json.loads(response.text)
     recipient = dat['payinAddress']
+    receiving_amount = dat['toAmount']
+    track =  dat['id']
+    print(" You will be receiving : {} Usdt".format(receiving_amount))
     transfer.BTC_Transfer(user_number, amount, recipient)
+    return track, response.text
+
 
 def ETH_USDT(user_number, amount : float) :
 
@@ -205,4 +211,9 @@ def ETH_USDT(user_number, amount : float) :
     response = requests.post(url, headers=headers, data=json.dumps(data))
     dat = json.loads(response.text)
     recipient = dat['payinAddress']
+    receiving_amount = dat['toAmount']
+    track =  dat['id']
+    print(" You will be receiving : {} Usdt".format(receiving_amount))
     transfer.ETH_Transfer(user_number, amount, recipient)
+    return track, response.text
+
