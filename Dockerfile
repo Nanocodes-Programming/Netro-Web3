@@ -1,18 +1,20 @@
 # Use an official Python runtime as a parent image
 FROM python:3.9
 
-# Set environment variables for Python and Django
-ENV PYTHONUNBUFFERED 1
-
-# Create and set the working directory in the container
+# Set the working directory to /app
 WORKDIR /app
 
-# Copy the requirements file into the container and install dependencies
-COPY requirements.txt /app/
-RUN pip install -r requirements.txt
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# Copy the Django project source code into the container
-COPY . /app/
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Start Gunicorn to serve your Django application
-CMD ["gunicorn", "app", "app", ]
+# Make port 8000 available to the world outside this container
+EXPOSE 8000
+
+# Define environment variable
+ENV NAME World
+
+# Run app.py when the container launches using gunicorn
+CMD ["gunicorn", "-b", ":8000", "app:app"]
