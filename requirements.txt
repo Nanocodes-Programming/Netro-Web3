@@ -52,7 +52,7 @@ MarkupSafe==2.1.5
 moneywagon==1.22.3
 moralis==0.0.1
 multidict==6.0.5
-numpy==1.26.4
+numpy==1.24.4
 packaging==24.0
 parsimonious==0.10.0
 protobuf==5.26.1
