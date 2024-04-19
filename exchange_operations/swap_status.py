@@ -3,7 +3,7 @@ import json
 
 #Track id is return from swap operation
 def get_status(track_id: str) :
-    url = "https://api.changenow.io/v2/exchange/by-id" +'?id=' + track_id
+    url = "https://api.changenow.io/v2/exchange/by-id?id={track_id}"
 
     payload = {}
     headers = {

@@ -2,12 +2,9 @@ import requests
 import json
 from crypto_operations.transfer import sendUSDT
 
-
-rate = 5
-
-def USDTNGN(user_number, amount_udst: float, account_number : str, account_bank_code :str):
+def USDTNGN(user_number, amount_udst: float, account_number : str, account_bank_code :str, rate : float):
     sendUSDT(user_number, 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', amount_udst)
-    secret_key = 'FLWSECK_TEST-87b8f0592c962c13a7cd4d519a897669-X'
+    secret_key = 'FLWSECK_TEST-4f0e0a374609f24bf18d23a0364d6660-X'
 
 # Flutterwave API endpoint for transfers
     url = 'https://api.flutterwave.com/v3/transfers'
