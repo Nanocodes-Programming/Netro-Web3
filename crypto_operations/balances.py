@@ -1,12 +1,11 @@
 # Import necessary libraries
-from moralis import evm_api, sol_api
+import requests
+import os
+from web3 import Web3
 import blockcypher
 from moneywagon import AddressBalance
 from tronpy import Tron
 from tronpy.providers import HTTPProvider
-
-# Define the Moralis API key for interacting with Ethereum and Solana
-moralis_api_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImZlYjI1ZTAxLWIwZTktNGQ0Ny1hN2FjLWIwMTJlMjYxYmE5MCIsIm9yZ0lkIjoiMjE5MjcxIiwidXNlcklkIjoiMjE4OTczIiwidHlwZUlkIjoiZTUyZjM5NWQtNDZlZC00YzI5LTgwNTQtYmVlNGJlNzQ1Yjc0IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MTE4MzkzNzMsImV4cCI6NDg2NzU5OTM3M30.4bP6Vsi81YPRGmvVz4yWgh_7EiBTX4-pr8FRbTL82tw'
 
 # Function to get the balance of a Bitcoin address
 def balance_BTC(addr : str):
@@ -21,25 +20,39 @@ def balance_BTC(addr : str):
 
 # Function to get the balance of an Ethereum address
 def balance_ETH(addr : str):
-    # Define the parameters for the Moralis API request
-    params = {
-        'chain' :'eth',
-        'address' : addr }
-    # Use the Moralis API to get the native balance of the ETH address
-    result1 = evm_api.balance.get_native_balance(api_key= moralis_api_key, params= params, )
+    web3 = Web3(Web3.HTTPProvider('https://mainnet.infura.io/v3/4f32e758e9ae4046ba13e6a4b00a2e88'))
+    ethereum_address = addr
+    balance_wei = web3.eth.get_balance(ethereum_address)
+    result1 = web3.from_wei(balance_wei, 'ether')
     return result1
 
 # Function to get the balance of a Solana address
 def balance_SOL(addr : str):
-    # Define the parameters for the Moralis API request
-    params = {
-        'network' :'mainnet',
-        'address' : addr }
-    # Use the Moralis API to get the portfolio of the SOL address
-    res = sol_api.account.get_portfolio(api_key= moralis_api_key, params= params, )
-    # Extract the native balance of SOL from the response
-    res1 = res['nativeBalance']['solana']
-    return res1
+    # Set your Solana RPC URL
+    solana_rpc_url = os.getenv("SOLANA_RPC_URL", "https://api.mainnet-beta.solana.com")
+    # Prepare the JSON-RPC payload
+    payload = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "getBalance",
+        "params": [addr]
+    }
+    # Send the request
+    response = requests.post(solana_rpc_url, json=payload)
+    # Check if the request was successful
+    if response.status_code == 200:
+        result = response.json()
+        if 'result' in result and 'value' in result['result']:
+            # The balance is returned in lamports, convert to SOL
+            balance_lamports = result['result']['value']
+            balance_sol = balance_lamports / 1e9 # 1 SOL = 1e9 lamports
+            return balance_sol
+        else:
+            print("Error: Unable to retrieve balance.")
+            return None
+    else:
+        print(f"Error: Request failed with status code {response.status_code}.")
+        return None
 
 # Function to get the balance of a Tron address
 def get_trx_balance(address : str):
