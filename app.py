@@ -228,5 +228,10 @@ def price_naira():
     return jsonify(get_naira_prices())
 
 
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify("welcome to 9app web3 service")
+
+
 if __name__ == '__main__':
     app.run(debug=True)
