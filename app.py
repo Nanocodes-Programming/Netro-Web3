@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from crypto_operations.accounts import get_accounts
-from crypto_operations import balances
+from crypto_operations.balances import balance_BTC, balance_ETH, balance_SOL, get_trx_balance, USDT_balance
 from crypto_operations.transfer import BTC_Transfer, ETH_Transfer, Tron_Transfer, Sol_Transfer, sendUSDT
 from exchange_operations.swap_coin import trx_to_usdt, SOL_USDT, BTC_USDT, ETH_USDT
 from exchange_operations.exchange import USDTNGN
@@ -15,24 +15,50 @@ def accounts_endpoint(user_number):
     accounts = get_accounts(user_number)
     return jsonify(accounts)
 
-@app.route('/balance', methods=['GET'])
-def balance_endpoint():
-    btc_address = request.args.get('btc_address')
-    eth_address = request.args.get('eth_address')
-    sol_address = request.args.get('sol_address')
-    trx_address = request.args.get('trx_address')
-    response = {}
-        # Check if each address is provided and fetch its balance
-    if btc_address:
-        response['BTC'] = balances.balance_BTC(btc_address)
-    if eth_address:
-        response['ETH'] = balances.balance_ETH(eth_address)
-    if sol_address:
-        response['SOL'] = balances.balance_SOL(sol_address)
-    if trx_address:
-        response['TRX'] = balances.get_trx_balance(trx_address)
+# Endpoint to get Bitcoin (BTC) address balance
+@app.route('/balance/btc', methods=['GET'])
+def get_btc_balance():
+    addr = request.args.get('address')
+    if not addr:
+        return jsonify({"error": "Address parameter is required"}), 400
+    btc_balance = balance_BTC(addr)
+    return jsonify({"btc_balance": btc_balance}), 200
 
-    return response
+# Endpoint to get Ethereum (ETH) address balance
+@app.route('/balance/eth', methods=['GET'])
+def get_eth_balance():
+    addr = request.args.get('address')
+    if not addr:
+        return jsonify({"error": "Address parameter is required"}), 400
+    eth_balance = balance_ETH(addr)
+    return jsonify({"eth_balance": eth_balance}), 200
+
+# Endpoint to get Solana (SOL) address balance
+@app.route('/balance/sol', methods=['GET'])
+def get_sol_balance():
+    addr = request.args.get('address')
+    if not addr:
+        return jsonify({"error": "Address parameter is required"}), 400
+    sol_balance = balance_SOL(addr)
+    return jsonify({"sol_balance": sol_balance}), 200
+
+# Endpoint to get Tron (TRX) address balance
+@app.route('/balance/trx', methods=['GET'])
+def get_trx_address_balance():
+    addr = request.args.get('address')
+    if not addr:
+        return jsonify({"error": "Address parameter is required"}), 400
+    trx_balance = get_trx_balance(addr)
+    return jsonify({"trx_balance": trx_balance}), 200
+
+# Endpoint to get USDT (Tether) balance for an address
+@app.route('/balance/usdt', methods=['GET'])
+def get_usdt_balance():
+    addr = request.args.get('address')
+    if not addr:
+        return jsonify({"error": "Address parameter is required"}), 400
+    usdt_balance = USDT_balance(addr)
+    return jsonify({"usdt_balance": usdt_balance}), 200
 
 
 # Endpoint for Bitcoin (BTC) Transfer
