@@ -15,223 +15,126 @@ def accounts_endpoint(user_number):
     accounts = get_accounts(user_number)
     return jsonify(accounts)
 
-# Endpoint to get Bitcoin (BTC) address balance
-@app.route('/balance/btc', methods=['GET'])
-def get_btc_balance():
+@app.route('/balance/<string:currency>', methods=['GET'])
+def get_currency_balance(currency):
     addr = request.args.get('address')
     if not addr:
         return jsonify({"error": "Address parameter is required"}), 400
-    btc_balance = balance_BTC(addr)
-    return jsonify({"btc_balance": btc_balance}), 200
+    
+    balance_functions = {
+        'btc': balance_BTC,
+        'eth': balance_ETH,
+        'sol': balance_SOL,
+        'trx': get_trx_balance,
+        'usdt': USDT_balance
+    }
+    
+    if currency in balance_functions:
+        balance = balance_functions[currency](addr)
+        return jsonify({f"{currency}_balance": balance}), 200
+    else:
+        return jsonify({"error": "Unsupported currency type"}), 404
 
-# Endpoint to get Ethereum (ETH) address balance
-@app.route('/balance/eth', methods=['GET'])
-def get_eth_balance():
-    addr = request.args.get('address')
-    if not addr:
-        return jsonify({"error": "Address parameter is required"}), 400
-    eth_balance = balance_ETH(addr)
-    return jsonify({"eth_balance": eth_balance}), 200
-
-# Endpoint to get Solana (SOL) address balance
-@app.route('/balance/sol', methods=['GET'])
-def get_sol_balance():
-    addr = request.args.get('address')
-    if not addr:
-        return jsonify({"error": "Address parameter is required"}), 400
-    sol_balance = balance_SOL(addr)
-    return jsonify({"sol_balance": sol_balance}), 200
-
-# Endpoint to get Tron (TRX) address balance
-@app.route('/balance/trx', methods=['GET'])
-def get_trx_address_balance():
-    addr = request.args.get('address')
-    if not addr:
-        return jsonify({"error": "Address parameter is required"}), 400
-    trx_balance = get_trx_balance(addr)
-    return jsonify({"trx_balance": trx_balance}), 200
-
-# Endpoint to get USDT (Tether) balance for an address
-@app.route('/balance/usdt', methods=['GET'])
-def get_usdt_balance():
-    addr = request.args.get('address')
-    if not addr:
-        return jsonify({"error": "Address parameter is required"}), 400
-    usdt_balance = USDT_balance(addr)
-    return jsonify({"usdt_balance": usdt_balance}), 200
-
-
-# Endpoint for Bitcoin (BTC) Transfer
-@app.route('/btc-transfer', methods=['POST'])
-def btc_transfer():
+@app.route('/<string:currency>-transfer', methods=['POST'])
+def currency_transfer(currency):
     data = request.json
-    user_number = data['user_number']
-    amount = float(data['amount'])
-    recipient = data['recipient']
-    signed_tx = BTC_Transfer(user_number, amount, recipient)
-    return jsonify({
-        "signed_tx": signed_tx
-    })
+    user_number = data.get('user_number')
+    amount = data.get('amount', 0.0)
+    recipient = data.get('recipient')
+    
+    transfer_functions = {
+        'btc': BTC_Transfer,
+        'eth': ETH_Transfer,
+        'tron': Tron_Transfer,
+        'sol': Sol_Transfer,
+        'usdt': sendUSDT
+    }
+    
+    if currency in transfer_functions:
+        result = transfer_functions[currency](user_number, float(amount), recipient)
+        return jsonify(result), 200
+    else:
+        return jsonify({"error": "Unsupported currency type"}), 404
 
-# Endpoint for Ethereum (ETH) Transfer
-@app.route('/eth-transfer', methods=['POST'])
-def eth_transfer():
+@app.route('/<string:from_coin>-to-<string:to_coin>', methods=['POST'])
+def coin_to_coin(from_coin, to_coin):
     data = request.json
-    user_number = data['user_number']
-    amount = float(data['amount'])
-    recipient = data['recipient']
-    txn_hash = ETH_Transfer(user_number, amount, recipient)
-    return jsonify({
-        "txn_hash": txn_hash
-    })
+    user_number = data.get('user_number')
+    amount = float(data.get('amount', 0.0))
+    
+    swap_functions = {
+        'trx-to-usdt': trx_to_usdt,
+        'sol-to-usdt': SOL_USDT,
+        'btc-to-usdt': BTC_USDT,
+        'eth-to-usdt': ETH_USDT
+    }
+    
+    key = f"{from_coin}-to-{to_coin}"
+    if key in swap_functions:
+        track, response_text = swap_functions[key](user_number, amount)
+        return jsonify({"track": track, "response_text": response_text}), 200
+    else:
+        return jsonify({"error": "Unsupported conversion type"}), 404
 
-# Endpoint for Tron (TRX) Transfer
-@app.route('/tron-transfer', methods=['POST'])
-def tron_transfer():
+@app.route('/exchange-rate', methods=['POST'])
+def exchange_rate():
     data = request.json
-    user_number = data['user_number']
-    recipient = data['recipient']
-    amount = float(data['amount'])
-    tx_id, status, result = Tron_Transfer(user_number, recipient, amount)
-    return jsonify({
-        "tx_id": tx_id,
-        "status": status,
-        "result": result
-    })
-
-# Endpoint for Solana (SOL) Transfer
-@app.route('/sol-transfer', methods=['POST'])
-def sol_transfer():
-    data = request.json
-    user_number = data['user_number']
-    recipient = data['recipient']
-    amount = float(data['amount'])
-    tx_result = Sol_Transfer(user_number, recipient, amount)
-    return jsonify({
-        "tx_result": tx_result
-    })
-
-# Endpoint for USDT Transfer
-@app.route('/usdt-transfer', methods=['POST'])
-def usdt_transfer():
-    data = request.json
-    user_number = data['user_number']
-    recipient = data['recipient']
-    amount = float(data['amount'])
-    tx_id, status, result = sendUSDT(user_number, recipient, amount)
-    return jsonify({
-        "tx_id": tx_id,
-        "status": status,
-        "result": result
-    })
-
-
-@app.route('/trx-to-usdt', methods=['POST'])
-def trx_to_usdt_endpoint():
-    data = request.json
-    user_number = data['user_number']
-    amount_trx = float(data['amount_trx'])
-    tx_id, result_status, result = trx_to_usdt(user_number, amount_trx)
-    return jsonify({
-        "tx_id": tx_id,
-        "result_status": result_status,
-        "result": result
-    })
-
-# Endpoint for SOL to USDT conversion
-@app.route('/sol-to-usdt', methods=['POST'])
-def sol_to_usdt_endpoint():
-    data = request.json
-    user_number = data['user_number']
-    amount = float(data['amount'])
-    track, response_text = SOL_USDT(user_number, amount)
-    return jsonify({
-        "track": track,
-        "response_text": response_text
-    })
-
-# Endpoint for BTC to USDT conversion
-@app.route('/btc-to-usdt', methods=['POST'])
-def btc_to_usdt_endpoint():
-    data = request.json
-    user_number = data['user_number']
-    amount = float(data['amount'])
-    track, response_text = BTC_USDT(user_number, amount)
-    return jsonify({
-        "track": track,
-        "response_text": response_text
-    })
-
-# Endpoint for ETH to USDT conversion
-@app.route('/eth-to-usdt', methods=['POST'])
-def eth_to_usdt_endpoint():
-    data = request.json
-    user_number = data['user_number']
-    amount = float(data['amount'])
-    track, response_text = ETH_USDT(user_number, amount)
-    return jsonify({
-        "track": track,
-        "response_text": response_text
-    })
-
-@app.route('/usdt-to-ngn', methods=['POST'])
-def usdt_to_ngn():
-    data = request.json
-    user_number = data['user_number']
-    amount_udst = float(data['amount_udst'])
-    account_number = data['account_number']
-    account_bank_code = data['account_bank_code']
-    rate = float(data['rate'])
-
-    try:
-        # Call the USDT to NGN transfer function from exchange.py
-        result = USDTNGN(user_number, amount_udst, account_number, account_bank_code, rate)
-        return jsonify({"message": "Transfer initiated successfully.", "result": result}), 200
-    except Exception as e:
-        return jsonify({"message": "Failed to initiate transfer.", "error": str(e)}), 500
-
-
-# Endpoint for getting exchange estimate
-@app.route('/get-exchange-estimate', methods=['POST'])
-def get_exchange_estimate():
-    data = request.json
-    from_coin = data['from_coin']
-    to_coin = data['to_coin']
-    to_coin_network = data['to_coin_network']
-    amount = float(data['amount'])
+    from_coin = data.get('from_coin')
+    to_coin = data.get('to_coin')
+    to_coin_network = data.get('to_coin_network', 'mainnet')
+    amount = float(data.get('amount', 0.0))
     estimated_amount = get_estimate(from_coin, to_coin, to_coin_network, amount)
+    return jsonify({"estimated_amount": estimated_amount})
+
+@app.route('/price/<string:currency>', methods=['GET'])
+def price(currency):
+    price_functions = {
+        'usd': get_usd_prices,
+        'naira': get_naira_prices
+    }
+    
+    if currency in price_functions:
+        try:
+            data = price_functions[currency]()
+            return jsonify(data), 200
+        except Exception as e:
+            return jsonify({"message": "Failed to get prices.", "error": str(e)}), 500
+    else:
+        return jsonify({"error": "Unsupported currency type"}), 404
+
+@app.route('/balance/all', methods=['POST'])
+def get_all_balances():
+    data = request.json  # Expecting a JSON with keys as currency names and values as addresses
+    balances = {}
+    
+    balance_functions = {
+        'btc': balance_BTC,
+        'eth': balance_ETH,
+        'sol': balance_SOL,
+        'trx': get_trx_balance,
+        'usdt': USDT_balance
+    }
+    
+    errors = {}
+    
+    for currency, address in data.items():
+        if currency in balance_functions:
+            try:
+                balance = balance_functions[currency](address)
+                balances[currency] = balance
+            except Exception as e:
+                errors[currency] = str(e)
+        else:
+            errors[currency] = "Unsupported currency or missing balance function"
+
     return jsonify({
-        "estimated_amount": estimated_amount
-    })
-
-# Endpoint for getting swap status
-@app.route('/get-swap-status', methods=['POST'])
-def get_swap_status():
-    data = request.json
-    track_id = data['track_id']
-
-    status, response_text = get_status(track_id)
-
-    return jsonify({
-        "status": status,
-        "response_text": response_text
-    })
-
-
-@app.route('/price_usd', methods=['GET'])
-def price_usd():
-    return jsonify(get_usd_prices())
-
-
-@app.route('/price-naira', methods=['GET'])
-def price_naira():
-    return jsonify(get_naira_prices())
-
+        "balances": balances,
+        "errors": errors
+    }), 200 if not errors else 400
 
 @app.route('/', methods=['GET'])
 def index():
-    return jsonify("welcome to 9app web3 service")
-
+    return jsonify("Welcome to the 9app Web3 Service")
 
 if __name__ == '__main__':
     app.run(debug=True)

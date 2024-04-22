@@ -61,16 +61,16 @@ def get_usd_prices():
             percentage_SOL = entry['quote']['USD']["percent_change_24h"]
 
         # Return the cryptocurrency prices and changes as a JSON response
-        return jsonify({
+        return {
             'BTC': {'name': Name_BTC, 'symbol': symbol_BTC, 'price': price_BTC, 'change': percentage_BTC},
             'ETH': {'name': Name_ETH, 'symbol': symbol_ETH, 'price': price_ETH, 'change': percentage_ETH},
             'USDT': {'name': Name_USDT, 'symbol': symbol_USDT, 'price': price_USDT, 'change': percentage_USDT},
             'TRX': {'name': Name_TRX, 'symbol': symbol_TRX, 'price': price_TRX, 'change': percentage_TRX},
             'SOL': {'name': Name_SOL, 'symbol': symbol_SOL, 'price': price_SOL, 'change': percentage_SOL},
-        })
-    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.TooManyRedirects) as e:
+        }
+    except Exception as e:
         # Handle exceptions and return an error message
-        return jsonify({'error': str(e)}), 500
+        raise Exception(e)
 
 
 def get_naira_prices():
@@ -124,12 +124,12 @@ def get_naira_prices():
             price_SOL = entry['quote']['NGN']["price"]
             percentage_SOL = entry['quote']['NGN']["percent_change_24h"]
 
-        return jsonify({
+        return {
             'BTC': {'name': Name_BTC, 'symbol': symbol_BTC, 'price': price_BTC, 'change': percentage_BTC},
             'ETH': {'name': Name_ETH, 'symbol': symbol_ETH, 'price': price_ETH, 'change': percentage_ETH},
             'USDT': {'name': Name_USDT, 'symbol': symbol_USDT, 'price': price_USDT, 'change': percentage_USDT},
             'TRX': {'name': Name_TRX, 'symbol': symbol_TRX, 'price': price_TRX, 'change': percentage_TRX},
             'SOL': {'name': Name_SOL, 'symbol': symbol_SOL, 'price': price_SOL, 'change': percentage_SOL},
-        })
-    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.TooManyRedirects) as e:
-        return jsonify({'error': str(e)}), 500
+        }
+    except Exception as e:
+        raise Exception(e)

@@ -4,7 +4,7 @@ This API documentation outlines endpoints for initiating cryptocurrency transfer
 
 ### Base URL
 
-The base URL for this API is `http://yourdomain.com/` (replace `yourdomain.com` with the actual domain where the API is hosted).
+The base URL for this API is `https://web3-wallet-e40e6d4f61b9.herokuapp.com`.
 
 ### Endpoints
 
