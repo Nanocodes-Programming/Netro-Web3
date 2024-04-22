@@ -172,3 +172,68 @@ Certainly! Here's the detailed API documentation for the endpoint to retrieve mu
     }
   }
   ```
+
+#### **7. Get Swap Status**
+- **Endpoint**: `/get-swap-status`
+- **Method**: `POST`
+- **Description**: Fetches the status of a previously initiated swap transaction.
+- **Request Body**: JSON object containing the tracking ID of the swap transaction.
+- **Request Format**:
+  - `track_id`: The tracking ID of the swap transaction.
+- **Response**:
+  - **Success**: Returns the status and response text of the swap transaction.
+  - **Error**: Returns an error message if the swap status could not be retrieved.
+- **Example Request**:
+  ```http
+  POST /get-swap-status
+  Content-Type: application/json
+
+  {
+    "track_id": "xyz789..."
+  }
+  ```
+- **Example Response**:
+  ```json
+  {
+    "status": "Completed",
+    "response_text": "Swap successful and funds transferred"
+  }
+  ```
+
+#### **8. Convert USDT to NGN**
+- **Endpoint**: `/usdt-to-ngn`
+- **Method**: `POST`
+- **Description**: Converts a specified amount of USDT to Nigerian Naira (NGN) and transfers it to a provided bank account.
+- **Request Body**:
+  - `user_number`: User's unique identifier.
+  - `amount_udst`: Amount of USDT to be converted.
+  - `account_number`: The bank account number where NGN will be transferred.
+  - `account_bank_code`: The bank code for the destination bank account.
+  - `rate`: The conversion rate from USDT to NGN.
+- **Response**:
+  - **Success**: Returns a message indicating the transfer initiation and details of the result.
+  - **Error**: Returns an error message if the conversion or transfer fails.
+- **Example Request**:
+  ```http
+  POST /usdt-to-ngn
+  Content-Type: application/json
+
+  {
+    "user_number": 12345,
+    "amount_udst": 500.0,
+    "account_number": "0123456789",
+    "account_bank_code": "050",
+    "rate": 380.5
+  }
+  ```
+- **Example Response**:
+  ```json
+  {
+    "message": "Transfer initiated successfully.",
+    "result": {
+      "transaction_id": "abc123...",
+      "status": "Pending",
+      "amount_ngn": 190250
+    }
+  }
+  ```

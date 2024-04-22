@@ -132,6 +132,36 @@ def get_all_balances():
         "errors": errors
     }), 200 if not errors else 400
 
+
+@app.route('/get-swap-status', methods=['POST'])
+def get_swap_status():
+    data = request.json
+    track_id = data['track_id']
+
+    status, response_text = get_status(track_id)
+    return jsonify({
+        "status": status,
+        "response_text": response_text
+    })
+
+
+@app.route('/usdt-to-ngn', methods=['POST'])
+def usdt_to_ngn():
+    data = request.json
+    user_number = data['user_number']
+    amount_udst = float(data['amount_udst'])
+    account_number = data['account_number']
+    account_bank_code = data['account_bank_code']
+    rate = float(data['rate'])
+
+    try:
+        # Call the USDT to NGN transfer function from exchange.py
+        result = USDTNGN(user_number, amount_udst, account_number, account_bank_code, rate)
+        return jsonify({"message": "Transfer initiated successfully.", "result": result}), 200
+    except Exception as e:
+        return jsonify({"message": "Failed to initiate transfer.", "error": str(e)}), 500
+
+
 @app.route('/', methods=['GET'])
 def index():
     return jsonify("Welcome to the 9app Web3 Service")
