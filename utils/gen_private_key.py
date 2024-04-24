@@ -3,7 +3,7 @@ from web3 import Web3
 def get_private_key(user_number):
     w3 = Web3()
     # This is an example seed phrase
-    seed_phrase = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above"
+    seed_phrase = "space cook alcohol item save mixture basket public nothing oppose infant winner"
 
     w3.eth.account.enable_unaudited_hdwallet_features()
     # Derive a child key from the seed using the path m/0'/0'/i'
