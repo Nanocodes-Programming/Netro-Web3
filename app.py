@@ -114,19 +114,19 @@ def get_all_balances():
         'trx': get_trx_balance,
         'usdt': USDT_balance
     }
-    
     errors = {}
-    
     for currency, address in data.items():
         if currency in balance_functions:
             try:
                 balance = balance_functions[currency](address)
                 balances[currency] = balance
             except Exception as e:
-                errors[currency] = str(e)
+                if str(e) == 'account not found on-chain':
+                    balances[currency] = 0
+                else:
+                    errors[currency] = str(e)
         else:
             errors[currency] = "Unsupported currency or missing balance function"
-
     return jsonify({
         "balances": balances,
         "errors": errors
