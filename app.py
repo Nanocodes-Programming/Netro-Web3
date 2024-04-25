@@ -7,6 +7,7 @@ from exchange_operations.exchange import USDTNGN
 from exchange_operations.swap_estimate import get_estimate
 from exchange_operations.swap_status import get_status
 from api_operations.coin_prices import get_usd_prices, get_naira_prices
+from crypto_operations.get_transactions import get_bitcoin_transactions, get_ethereum_transactions, get_tron_transactions, get_solana_transactions
 
 app = Flask(__name__)
 
@@ -161,6 +162,19 @@ def usdt_to_ngn():
     except Exception as e:
         return jsonify({"message": "Failed to initiate transfer.", "error": str(e)}), 500
 
+
+@app.route('/transactions', methods=['GET'])
+def transactions():
+    address = request.args.get('address')
+    if not address:
+        return jsonify({"error": "Address is required"}), 400
+    transactions = {
+        "bitcoin": get_bitcoin_transactions(address),
+        "ethereum": get_ethereum_transactions(address),
+        "tron": get_tron_transactions(address),
+        "solana": get_solana_transactions(address)
+    }
+    return jsonify(transactions)
 
 @app.route('/', methods=['GET'])
 def index():
