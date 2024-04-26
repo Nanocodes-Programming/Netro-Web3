@@ -7,7 +7,7 @@ from exchange_operations.exchange import USDTNGN
 from exchange_operations.swap_estimate import get_estimate
 from exchange_operations.swap_status import get_status
 from api_operations.coin_prices import get_usd_prices, get_naira_prices
-from crypto_operations.get_transactions import get_bitcoin_transactions, get_ethereum_transactions, get_tron_transactions, get_solana_transactions
+from crypto_operations.get_transactions import (get_bitcoin_transactions,get_tron_transactions,get_usdt_transactions,get_solana_transactions, get_ethereum_transactions)
 
 app = Flask(__name__)
 
@@ -163,18 +163,25 @@ def usdt_to_ngn():
         return jsonify({"message": "Failed to initiate transfer.", "error": str(e)}), 500
 
 
-@app.route('/transactions', methods=['GET'])
-def transactions():
+@app.route('/transactions/<string:currency>', methods=['GET'])
+def get_currency_transactions(currency):
     address = request.args.get('address')
     if not address:
-        return jsonify({"error": "Address is required"}), 400
-    transactions = {
-        "bitcoin": get_bitcoin_transactions(address),
-        "ethereum": get_ethereum_transactions(address),
-        "tron": get_tron_transactions(address),
-        "solana": get_solana_transactions(address)
+        return jsonify({"error": "Address parameter is required"}), 400
+    
+    transaction_functions = {
+        'btc': get_bitcoin_transactions,
+        'eth': get_ethereum_transactions,
+        'tron': get_tron_transactions,
+        'usdt': get_usdt_transactions,
+        'solana': get_solana_transactions
     }
-    return jsonify(transactions)
+    
+    if currency in transaction_functions:
+        transactions = transaction_functions[currency](address)
+        return jsonify({f"{currency}_transactions": transactions}), 200
+    else:
+        return jsonify({"error": "Unsupported currency type"}), 404
 
 @app.route('/', methods=['GET'])
 def index():

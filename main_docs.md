@@ -237,3 +237,57 @@ Certainly! Here's the detailed API documentation for the endpoint to retrieve mu
     }
   }
   ```
+#### **9. Cryptocurrency Transactions**
+- **Endpoint**: `/transactions/<string:currency>`
+- **Method**: `GET`
+- **Description**: Retrieves transaction details for a specific cryptocurrency.
+- **URL Parameters**:
+  - `currency` (string): Cryptocurrency symbol (e.g., `btc`, `eth`, `tron`, `usdt`, `solana`).
+- **Query Parameters**:
+  - `address` (string, required): Cryptocurrency address for which transactions are to be retrieved.
+- **Response**:
+  ```json
+  {
+    "btc_transactions": [
+      {
+        "type": "Incoming/Outgoing",
+        "amount": "number",
+        "address": "string"
+      },
+      ...
+    ],
+    "eth_transactions": [
+      {
+        "type": "incoming/outgoing",
+        "hash": "string",
+        "amount": "number",
+        "from/to": "string"
+      },
+      ...
+    ],
+    "tron_transactions": [
+      {
+        "type": "incoming/outgoing",
+        "amount": "number",
+        "from/to": "string"
+      },
+      ...
+    ],
+    "usdt_transactions": [
+      {
+        "type": "incoming/outgoing",
+        "amount": "number",
+        "from/to": "string"
+      },
+      ...
+    ],
+    "solana_transactions": [
+      {
+        "direction": "incoming/outgoing",
+        "amount": "number",
+        "address_to": "string",
+        "address_from": "string"
+      },
+      ...
+    ]
+  }

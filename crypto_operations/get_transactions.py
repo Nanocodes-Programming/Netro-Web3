@@ -1,7 +1,5 @@
 import requests
 import json
-from web3 import Web3
-from tronapi import Tron
 import tron_base58ToHex as ToHex
 
 def get_bitcoin_transactions(address):
@@ -95,49 +93,40 @@ def get_usdt_transactions(address):
     return result # latest transaction comes first
 
 def get_solana_transactions(address):
-    url = "https://api.mainnet-beta.solana.com"
-    endpoint = "/api/v1/account/{}/transactions".format(address)
-    response = requests.get(url + endpoint)
-    transactions = []
+    url = f"https://api.solana.fm/v0/accounts/{address}/transfers?inflow=true&outflow=true&limit=12"
 
-    # Check if the response status code is successful (200)
-    if response.status_code == 200:
-        try:
-            # Attempt to parse the JSON response
-            transactions = response.json().get('result', [])
-            print(transactions)
-        except requests.exceptions.JSONDecodeError:
-            print("Error: Unable to decode JSON response.")
-    else:
-        print(f"Error: Request failed with status code {response.status_code}.")
+    response = requests.get(url)
+    data = response.json()
+    transfers = []
+    for transaction in data["results"]:
+        for transfer in transaction["data"]:
+            if transfer["action"] == "transfer":
+                if transfer["source"] == address:
+                    transfers.append({
+                        "direction": "outgoing",
+                        "amount": int(transfer["amount"])/1000000000,
+                        "address_to": transfer["destination"],
+                        "address_from": transfer["source"]
+                    })
+                elif transfer["destination"] == address:
+                    transfers.append({
+                        "direction": "incoming",
+                        "amount": int(transfer["amount"])/1000000000,
+                        "address_to": transfer["destination"],
+                        "address_from": transfer["source"]
+                    })
+    return transfers #latest transactions first, note transactions might take some time to appear, server issues
 
-    # Filter transactions based on the address
-    incoming = []
-    outgoing = []
-    for tx in transactions:
-        if tx['memo']:
-            # This is a simple way to check if the transaction is incoming or outgoing
-            # based on the memo. Adjust this logic based on your specific requirements.
-            if tx['memo'].startswith("Incoming"):
-                incoming.append(tx)
-            elif tx['memo'].startswith("Outgoing"):
-                outgoing.append(tx)
-    print("Incoming Transactions:")
-    for tx in incoming:
-        print(tx)
 
-    print("\nOutgoing Transactions:")
-    for tx in outgoing:
-        print(tx)
 
-# Example usage
-bitcoin_address = "bc1pnn6yf00yk0x6ju9zrz6m59gykj2l3m07llvjnyg7970m4etvss5sp0hm4s"
-ethereum_address = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
-tron_address = 'TDvmd3jyLK8mBdvTJZpCdTJBL2Pod2c8Jt'
-solana_address = "6cm4vNugtBYGeDJrXYnNC2uGPgVeYBtKQLzPW8HwvFVA"
+# # Example usage
+# bitcoin_address = "bc1pnn6yf00yk0x6ju9zrz6m59gykj2l3m07llvjnyg7970m4etvss5sp0hm4s"
+# ethereum_address = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+# tron_address = 'TDvmd3jyLK8mBdvTJZpCdTJBL2Pod2c8Jt'
+# solana_address = "AirDCHp6eyPyPxSazfVxhCREPDf2E9FrGn9d4wSbePwE"
 
-# print(get_bitcoin_transactions(bitcoin_address))
-# print(get_ethereum_transactions('0x7D788Fdc21CB6545310e9Ec7b45Da268070D7Dd5'))
-# print(get_tron_transactions(tron_address))
-print(get_solana_transactions(solana_address))
-# print(get_usdt_transactions('tron_address'))
+# # print(get_bitcoin_transactions(bitcoin_address))
+# # print(get_ethereum_transactions('0x7D788Fdc21CB6545310e9Ec7b45Da268070D7Dd5'))
+# # print(get_tron_transactions(tron_address))
+# print(get_solana_transactions(solana_address))
+# # print(get_usdt_transactions('tron_address'))
