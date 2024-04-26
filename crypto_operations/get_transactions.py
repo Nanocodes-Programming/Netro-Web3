@@ -1,6 +1,6 @@
 import requests
 import json
-import tron_base58ToHex as ToHex
+from . import tron_base58ToHex as ToHex
 
 def get_bitcoin_transactions(address):
     url = f"https://api.blockcypher.com/v1/btc/main/addrs/{address}/full"
