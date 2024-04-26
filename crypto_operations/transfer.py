@@ -6,16 +6,13 @@ from loguru import logger
 from tronpy.keys import PrivateKey
 from tronpy.providers import HTTPProvider
 from tronpy import Tron
+from decimal import Decimal
 from solana.rpc.api import Client
-from solders.message import Message, MessageHeader # type: ignore
-from solders.transaction import Transaction # type: ignore
-from solders.system_program import transfer, TransferParams
-from solders.pubkey import Pubkey as PublicKey # type: ignore
+from solana.transaction import Transaction
+from solders.compute_budget import set_compute_unit_limit, set_compute_unit_price # type: ignore
 from solders.keypair import Keypair # type: ignore
-from solders.hash import Hash # type: ignore
-from solders.commitment_config import CommitmentLevel # type: ignore
-from solders.rpc.config import RpcSendTransactionConfig # type: ignore
-from solders.rpc.requests import SendLegacyTransaction # type: ignore
+from solders.pubkey import Pubkey # type: ignore
+from solders.system_program import TransferParams, transfer
 from base58 import b58decode, b58encode
 from utils.gen_private_key import get_private_key
 
@@ -26,7 +23,7 @@ def BTC_Transfer(user_number, amount : float, recipient : str ):
     wallet.scan() # Scan the blockchain for transactions
     print("Wallet balance before transaction is : ", wallet.balance())
     amount = amount / 0.00000001
-    tx = wallet.send_to(recipient, amount, fee=1000)
+    tx = wallet.send_to(recipient, amount, fee='normal')
     signed_tx = tx.info()['hex']
     return signed_tx
 
@@ -52,7 +49,7 @@ def ETH_Transfer(user_number, amount : float, recipient : str):
     txn_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
     return txn_hash.hex()
 
-def Tron_Transfer(user_number, recipient: str, amount: float, fee_limit=35):
+def Tron_Transfer(user_number, recipient: str, amount: float):
     provider = HTTPProvider(api_key='d4e77476-2ae9-426e-b3aa-0488b3667048')
     client = Tron(provider=provider)
     private_key = get_private_key(user_number)
@@ -78,32 +75,39 @@ def Tron_Transfer(user_number, recipient: str, amount: float, fee_limit=35):
 def Sol_Transfer(user_number, recipient: str, amount: float):
     private_key = get_private_key(user_number)
     private_key_bytes = bytes.fromhex(private_key)
-    # Ensure the private key bytes are 32 bytes long
+# Ensure the private key bytes are 32 bytes long
     if len(private_key_bytes) != 32:
         raise ValueError("Private key must be 32 bytes long")
-    # Create a Keypair from the 32-byte private key
+# Create a Keypair from the 32-byte private key
     sender_keypair = Keypair.from_seed(private_key_bytes)
-    # Correctly derive the public key from the Keypair
-    sender_pubkey = sender_keypair.pubkey()
-    # Create a Message instance
-    message = Message(
-        # account_keys=[sender_pubkey, PublicKey.from_string(recipient)],
-        instructions=[transfer(TransferParams(from_pubkey=sender_pubkey, to_pubkey=PublicKey.from_string(recipient), lamports=amount * 1_000_000))],
-    )
-    # Get a recent blockhash
-    solana_client = Client("https://api.mainnet-beta.solana.com")
-    # Get the latest blockhash
-    latest_blockhash_resp = solana_client.get_latest_blockhash()
-    recent_blockha = getattr(latest_blockhash_resp.value, 'blockhash', None)
-    # Assuming recent_blockhash is already obtained as shown in your code
-    # Create a Transaction instance
-    txn = Transaction([sender_keypair],message,recent_blockha)
-    # Sign the transaction with the recent_blockhash
-    txn.sign([sender_keypair], recent_blockha)
-    # Send the transaction
-    return solana_client.send_transaction(txn)
 
-def sendUSDT(user_number, recipient: str, amount: float, fee_limit=35):
+    src: Keypair = sender_keypair
+    # recipient = "AirDCHp6eyPyPxSazfVxhCREPDf2E9FrGn9d4wSbePwE"
+
+    sol_lamports = Decimal("1e+9")
+
+    tx = Transaction(fee_payer=src.pubkey())
+# SOL transfer
+    tx.add(
+    transfer(
+    TransferParams(
+    from_pubkey=src.pubkey(),
+    to_pubkey=Pubkey.from_string(recipient),
+    lamports=int(amount * sol_lamports),
+    )
+    )
+    )
+# Extra fee
+    tx.add(set_compute_unit_limit(300_000))
+    tx.add(set_compute_unit_price(1000))
+
+    client = Client("https://api.mainnet-beta.solana.com")
+    # Simulate the transaction
+    # simulation_result = client.simulate_transaction(tx)
+    # return simulation_result
+    tx_sig = client.send_transaction(tx, src).value
+    return client.confirm_transaction(tx_sig)
+def sendUSDT(user_number, recipient: str, amount: float, fee_limit=2.5):
 
     def coin_to_sun( amount: float):
         return int(amount * 1_000_000)
@@ -136,3 +140,5 @@ def sendUSDT(user_number, recipient: str, amount: float, fee_limit=35):
     )
 
     return tx_id, result['receipt']['result'], result
+
+
