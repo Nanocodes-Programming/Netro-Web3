@@ -70,7 +70,7 @@ rlp==4.0.0
 rpds-py==0.18.0
 six==1.16.0
 sniffio==1.3.1
-solana==0.34.0
+solana==0.33.0
 solders==0.21.0
 soupsieve==2.5
 SQLAlchemy==2.0.29
