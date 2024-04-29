@@ -291,3 +291,127 @@ Certainly! Here's the detailed API documentation for the endpoint to retrieve mu
       ...
     ]
   }
+
+
+#### **Endpoint**: `/transactions`
+- **Method**: `POST`
+- **Description**: Retrieves transaction histories for specified cryptocurrencies.
+- **Request Body**: JSON object with cryptocurrency names as keys and their corresponding wallet addresses as values.
+- **Supported Currencies**: `btc` (Bitcoin), `eth` (Ethereum), `tron` (TRON), `usdt` (Tether), and `solana` (Solana).
+
+#### **Request Format**:
+- Keys: Cryptocurrency identifiers (e.g., 'btc', 'eth').
+- Values: Corresponding wallet addresses for each cryptocurrency.
+
+#### **Response**:
+- **Success**: Returns a JSON object containing transaction histories for each requested cryptocurrency and any errors encountered.
+- **Error**: Returns an error message if any currency is unsupported or if there's an issue with fetching transactions.
+
+#### **Example Request**:
+```http
+POST /transactions
+Content-Type: application/json
+
+{
+  "btc": "1P...",
+  "eth": "0x...",
+  "tron": "TQ...",
+  "solana": "5P...",
+  "usdt": "TR..."
+}
+```
+
+#### **Example Response**:
+```
+{
+  "transactions": {
+    "btc": [
+      {
+        "type": "Incoming",
+        "amount": 0.1
+      },
+      {
+        "type": "Outgoing",
+        "amount": 0.05,
+        "address": "1P..."
+      }
+    ],
+    "eth": [
+      {
+        "type": "incoming",
+        "hash": "0x...",
+        "amount": 2.5,
+        "from": "0x..."
+      }
+    ],
+    "tron": [
+      {
+        "type": "outgoing",
+        "amount": 150,
+        "to": "TQ..."
+      }
+    ],
+    "solana": [
+      {
+        "direction": "incoming",
+        "amount": 50,
+        "address_to": "5P...",
+        "address_from": "3N..."
+      },
+      {
+        "direction": "outgoing",
+        "amount": 20,
+        "address_to": "4N...",
+        "address_from": "5P..."
+      }
+    ],
+    "usdt": [
+      {
+        "type": "incoming",
+        "amount": 1000,
+        "from": "TY..."
+      },
+      {
+        "type": "outgoing",
+        "amount": 500,
+        "to": "TR..."
+      }
+    ]
+  },
+  "errors": {}
+}
+
+{
+  "transactions": {
+    "btc": [
+      {
+        "type": "Incoming",
+        "amount": 0.1
+      },
+      {
+        "type": "Outgoing",
+        "amount": 0.05,
+        "address": "1P..."
+      }
+    ],
+    "eth": [
+      {
+        "type": "incoming",
+        "hash": "0x...",
+        "amount": 2.5,
+        "from": "0x..."
+      }
+    ],
+    "tron": [
+      {
+        "type": "outgoing",
+        "amount": 150,
+        "to": "TQ..."
+      }
+    ]
+  },
+  "errors": {
+    "usdt": "Unsupported currency or missing transaction function"
+  }
+}
+```

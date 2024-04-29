@@ -183,6 +183,35 @@ def get_currency_transactions(currency):
     else:
         return jsonify({"error": "Unsupported currency type"}), 404
 
+@app.route('/transactions', methods=['POST'])
+def get_currency_transactions(currency):
+    data = request.json  # Expecting a JSON with keys as currency names and values as addresses
+    transactions = {}
+    errors = {}
+
+    transaction_functions = {
+        'btc': get_bitcoin_transactions,
+        'eth': get_ethereum_transactions,
+        'tron': get_tron_transactions,
+        'usdt': get_usdt_transactions,
+        'solana': get_solana_transactions
+    }
+
+    for currency, address in data.items():
+        if currency in transaction_functions:
+            try:
+                transaction = transaction_functions[currency](address)
+                transactions[currency] = transaction
+            except Exception as e:
+                errors[currency] = str(e)
+        else:
+            errors[currency] = "Unsupported currency or missing transaction function"
+        
+    return jsonify({
+        "transactions": transactions,
+        "errors": errors
+    }), 200 if not errors else 400
+
 @app.route('/', methods=['GET'])
 def index():
     return jsonify("Welcome to the 9app Web3 Service")
