@@ -44,7 +44,7 @@ def get_ethereum_transactions(address):
                 "amount" : (int(tx['value'])/1000000000000000000),
                 "to": tx['to']
             })
-    return result # latest transaction comes last
+    return list(reversed(result)) # latest transaction comes first
 
 def get_tron_transactions(address):
     address = ToHex.base58_to_hex(address)
@@ -126,7 +126,7 @@ def get_solana_transactions(address):
 # solana_address = "AirDCHp6eyPyPxSazfVxhCREPDf2E9FrGn9d4wSbePwE"
 
 # # print(get_bitcoin_transactions(bitcoin_address))
-# # print(get_ethereum_transactions('0x7D788Fdc21CB6545310e9Ec7b45Da268070D7Dd5'))
+# print(get_ethereum_transactions('0x7D788Fdc21CB6545310e9Ec7b45Da268070D7Dd5'))
 # # print(get_tron_transactions(tron_address))
 # print(get_solana_transactions(solana_address))
 # # print(get_usdt_transactions('tron_address'))
