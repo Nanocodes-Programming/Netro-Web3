@@ -184,7 +184,7 @@ def get_currency_transactions(currency):
         return jsonify({"error": "Unsupported currency type"}), 404
 
 @app.route('/transactions', methods=['POST'])
-def get_currency_transactions(currency):
+def get_transactions(currency):
     data = request.json  # Expecting a JSON with keys as currency names and values as addresses
     transactions = {}
     errors = {}
