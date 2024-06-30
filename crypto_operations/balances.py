@@ -54,14 +54,6 @@ def balance_SOL(addr : str):
         print(f"Error: Request failed with status code {response.status_code}.")
         return None
 
-# Function to get the balance of a Tron address
-def get_trx_balance(address : str):
-    # Define the provider for the Tron network
-    provider = HTTPProvider(api_key='d4e77476-2ae9-426e-b3aa-0488b3667048')
-    # Initialize the Tron client with the provider
-    client = Tron(provider=provider)
-    # Get the account balance of the Tron address
-    return float(client.get_account_balance(address))
 
 def USDT_balance( address: str):
     provider = HTTPProvider(api_key='d4e77476-2ae9-426e-b3aa-0488b3667048')

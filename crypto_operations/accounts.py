@@ -1,8 +1,7 @@
 from eth_account import Account
 from bitcoin import *
-from tron_address_converter import TronConverter
 from base58 import b58decode, b58encode
-from utils.gen_private_key import get_private_key
+from utils.gen_private_key import get_private_key, get_ltc_details
 
 # Function to generate cryptocurrency addresses for different blockchains
 def get_accounts(user_number):
@@ -24,26 +23,16 @@ def get_accounts(user_number):
     Bsc_account = Account.from_key(private_key)
     Bsc_address = Bsc_account.address
 
-    # Tron (TRC)
-    # Use the TronConverter to convert an Ethereum address to a Tron address
-    converter = TronConverter()
-    tron_address = converter.from_hex(eth_address)
 
-    # Solana
-    # Encode the private key in base58 format, then decode it to get the public key
-    # Solana addresses are derived from the public key
-    b58_private_key = b58encode(private_key)
-    keypair = b58decode(b58_private_key)
-    sol_priv_key = keypair[:32]
-    sol_pub_key = keypair[32:]
-    sol_address = b58encode(sol_pub_key).decode()
+    # Litecoin
+    
+    ltc_address = get_ltc_details(user_number, 'address')
 
     # Return the addresses as a dictionary
     return {
         "eth_address": eth_address,
         "btc_address": btc_address,
         "bsc_address": Bsc_address,
-        "tron_address": tron_address,
-        "sol_address": sol_address
+        "ltc_address": ltc_address
     }
 

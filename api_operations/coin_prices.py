@@ -42,31 +42,22 @@ def get_usd_prices():
             price_USDT = entry['quote']['USD']["price"]
             percentage_USDT = entry['quote']['USD']["percent_change_24h"]
 
-        # Fetch the latest listing for Tron (TRX)
-        response = session.get(url, params={'start': '15', 'limit': '1', 'convert': 'USD'})
-        data = json.loads(response.text)
-        for entry in data['data']:
-            Name_TRX = entry['name']
-            symbol_TRX = entry["symbol"]
-            price_TRX = entry['quote']['USD']["price"]
-            percentage_TRX = entry['quote']['USD']["percent_change_24h"]
 
-        # Fetch the latest listing for Solana (SOL)
-        response = session.get(url, params={'start': '5', 'limit': '1', 'convert': 'USD'})
+        # Fetch the latest listing for Litecoin (LTC)
+        response = session.get(url, params={'start': '18', 'limit': '1', 'convert': 'USD'})
         data = json.loads(response.text)
         for entry in data['data']:
-            Name_SOL = entry['name']
-            symbol_SOL = entry["symbol"]
-            price_SOL = entry['quote']['USD']["price"]
-            percentage_SOL = entry['quote']['USD']["percent_change_24h"]
+            Name_LTC = entry['name']
+            symbol_LTC = entry["symbol"]
+            price_LTC = entry['quote']['USD']["price"]
+            percentage_LTC = entry['quote']['USD']["percent_change_24h"]
 
         # Return the cryptocurrency prices and changes as a JSON response
         return {
             'BTC': {'name': Name_BTC, 'symbol': symbol_BTC, 'price': price_BTC, 'change': percentage_BTC},
             'ETH': {'name': Name_ETH, 'symbol': symbol_ETH, 'price': price_ETH, 'change': percentage_ETH},
             'USDT': {'name': Name_USDT, 'symbol': symbol_USDT, 'price': price_USDT, 'change': percentage_USDT},
-            'TRX': {'name': Name_TRX, 'symbol': symbol_TRX, 'price': price_TRX, 'change': percentage_TRX},
-            'SOL': {'name': Name_SOL, 'symbol': symbol_SOL, 'price': price_SOL, 'change': percentage_SOL},
+            'LTC': {'name': Name_LTC, 'symbol': symbol_LTC, 'price': price_LTC, 'change': percentage_LTC},
         }
     except Exception as e:
         # Handle exceptions and return an error message
@@ -108,28 +99,19 @@ def get_naira_prices():
             price_USDT = entry['quote']['NGN']["price"]
             percentage_USDT = entry['quote']['NGN']["percent_change_24h"]
 
-        response = session.get(url, params={'start': '13', 'limit': '1', 'convert': 'NGN'})
+        response = session.get(url, params={'start': '18', 'limit': '1', 'convert': 'NGN'})
         data = json.loads(response.text)
         for entry in data['data']:
-            Name_TRX = entry['name']
-            symbol_TRX = entry["symbol"]
-            price_TRX = entry['quote']['NGN']["price"]
-            percentage_TRX = entry['quote']['NGN']["percent_change_24h"]
-
-        response = session.get(url, params={'start': '5', 'limit': '1', 'convert': 'NGN'})
-        data = json.loads(response.text)
-        for entry in data['data']:
-            Name_SOL = entry['name']
-            symbol_SOL = entry["symbol"]
-            price_SOL = entry['quote']['NGN']["price"]
-            percentage_SOL = entry['quote']['NGN']["percent_change_24h"]
+            Name_LTC = entry['name']
+            symbol_LTC = entry["symbol"]
+            price_LTC = entry['quote']['NGN']["price"]
+            percentage_LTC = entry['quote']['NGN']["percent_change_24h"]
 
         return {
             'BTC': {'name': Name_BTC, 'symbol': symbol_BTC, 'price': price_BTC, 'change': percentage_BTC},
             'ETH': {'name': Name_ETH, 'symbol': symbol_ETH, 'price': price_ETH, 'change': percentage_ETH},
             'USDT': {'name': Name_USDT, 'symbol': symbol_USDT, 'price': price_USDT, 'change': percentage_USDT},
-            'TRX': {'name': Name_TRX, 'symbol': symbol_TRX, 'price': price_TRX, 'change': percentage_TRX},
-            'SOL': {'name': Name_SOL, 'symbol': symbol_SOL, 'price': price_SOL, 'change': percentage_SOL},
+            'LTC': {'name': Name_LTC, 'symbol': symbol_LTC, 'price': price_LTC, 'change': percentage_LTC},
         }
     except Exception as e:
         raise Exception(e)

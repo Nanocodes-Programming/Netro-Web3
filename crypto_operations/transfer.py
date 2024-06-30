@@ -49,28 +49,6 @@ def ETH_Transfer(user_number, amount : float, recipient : str):
     txn_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
     return txn_hash.hex()
 
-def Tron_Transfer(user_number, recipient: str, amount: float):
-    provider = HTTPProvider(api_key='d4e77476-2ae9-426e-b3aa-0488b3667048')
-    client = Tron(provider=provider)
-    private_key = get_private_key(user_number)
-    private_key = PrivateKey(bytes.fromhex(private_key))
-    public_key = private_key.public_key.to_base58check_address()
-    block_explorer_tx = 'https://tronscan.org/#/transaction/'
-    processing = False
-    logger.info('Tron chain loaded! Wallet address: {}'.format(public_key))
-    logger.info('Sending {} TRC to {}'.format(amount, recipient))
-    txn = (
-        client.trx.transfer(public_key, recipient, amount * 1000000)
-        .build()
-        .sign(private_key)
-    )
-    tx_id = txn.txid
-    logger.info('Transaction built!')
-    result = txn.broadcast().wait()
-    logger.info('Transaction {} sent! URL: {}{}'.format(
-        tx_id, block_explorer_tx, tx_id)
-    )
-    return tx_id, 'SUCCESS', result
 
 def Sol_Transfer(user_number, recipient: str, amount: float):
     private_key = get_private_key(user_number)

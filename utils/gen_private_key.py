@@ -1,9 +1,9 @@
 from web3 import Web3
-
+from bip_utils import Bip39MnemonicGenerator, Bip39SeedGenerator, Bip44, Bip44Coins, Bip44Changes
+seed_phrase = "space cook alcohol item save mixture basket public nothing oppose infant winner"
 def get_private_key(user_number):
     w3 = Web3()
     # This is an example seed phrase
-    seed_phrase = "space cook alcohol item save mixture basket public nothing oppose infant winner"
 
     w3.eth.account.enable_unaudited_hdwallet_features()
     # Derive a child key from the seed using the path m/0'/0'/i'
@@ -12,3 +12,32 @@ def get_private_key(user_number):
     key = Web3.to_hex(acc.key)
     private_key = key[2:]
     return  private_key
+
+def get_ltc_details(user_number, return_type):
+    seed_bytes = Bip39SeedGenerator(seed_phrase).Generate()
+    bip_obj_mst = Bip44.FromSeed(seed_bytes, Bip44Coins.LITECOIN)
+    bip_obj_acc = bip_obj_mst.Purpose().Coin().Account(user_number)
+    
+    # For each account, derive the external chain keys: m/44'/2'/user_number'/0
+    bip_obj_chain = bip_obj_acc.Change(Bip44Changes.CHAIN_EXT)
+    
+    # Generate the first address of each account: m/44'/2'/user_number'/0/0
+    bip_obj_addr = bip_obj_chain.AddressIndex(0)
+
+    if return_type == 'address':
+        result = bip_obj_addr.PublicKey().ToAddress()
+    elif return_type == 'private_key':
+        result = bip_obj_addr.PrivateKey().ToWif()
+    elif return_type == 'both':
+        result = {
+            'address': bip_obj_addr.PublicKey().ToAddress(),
+            'private_key': bip_obj_addr.PrivateKey().ToWif()
+        }
+    else:
+        raise ValueError("Invalid return_type parameter. Must be 'address', 'private_key', or 'both'.")
+    
+    return result
+
+
+
+print(f"  Address: {get_ltc_details(1, 'address')}")

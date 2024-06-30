@@ -1,13 +1,13 @@
 from flask import Flask, jsonify, request
 from crypto_operations.accounts import get_accounts
 from crypto_operations.balances import balance_BTC, balance_ETH, balance_SOL, get_trx_balance, USDT_balance
-from crypto_operations.transfer import BTC_Transfer, ETH_Transfer, Tron_Transfer, Sol_Transfer, sendUSDT
+from crypto_operations.transfer import BTC_Transfer, ETH_Transfer, Sol_Transfer, sendUSDT
 from exchange_operations.swap_coin import trx_to_usdt, SOL_USDT, BTC_USDT, ETH_USDT
 from exchange_operations.exchange import USDTNGN
 from exchange_operations.swap_estimate import get_estimate
 from exchange_operations.swap_status import get_status
 from api_operations.coin_prices import get_usd_prices, get_naira_prices
-from crypto_operations.get_transactions import (get_bitcoin_transactions,get_tron_transactions,get_usdt_transactions,get_solana_transactions, get_ethereum_transactions)
+from crypto_operations.get_transactions import (get_bitcoin_transactions,get_usdt_transactions,get_solana_transactions, get_ethereum_transactions)
 
 app = Flask(__name__)
 
@@ -26,7 +26,6 @@ def get_currency_balance(currency):
         'btc': balance_BTC,
         'eth': balance_ETH,
         'sol': balance_SOL,
-        'trx': get_trx_balance,
         'usdt': USDT_balance
     }
     
@@ -46,7 +45,6 @@ def currency_transfer(currency):
     transfer_functions = {
         'btc': BTC_Transfer,
         'eth': ETH_Transfer,
-        'tron': Tron_Transfer,
         'sol': Sol_Transfer,
         'usdt': sendUSDT
     }
@@ -112,7 +110,6 @@ def get_all_balances():
         'btc': balance_BTC,
         'eth': balance_ETH,
         'sol': balance_SOL,
-        'trx': get_trx_balance,
         'usdt': USDT_balance
     }
     errors = {}
@@ -172,7 +169,6 @@ def get_currency_transactions(currency):
     transaction_functions = {
         'btc': get_bitcoin_transactions,
         'eth': get_ethereum_transactions,
-        'tron': get_tron_transactions,
         'usdt': get_usdt_transactions,
         'solana': get_solana_transactions
     }
@@ -192,7 +188,6 @@ def get_transactions(currency):
     transaction_functions = {
         'btc': get_bitcoin_transactions,
         'eth': get_ethereum_transactions,
-        'tron': get_tron_transactions,
         'usdt': get_usdt_transactions,
         'solana': get_solana_transactions
     }
@@ -214,7 +209,7 @@ def get_transactions(currency):
 
 @app.route('/', methods=['GET'])
 def index():
-    return jsonify("Welcome to the 9app Web3 Service")
+    return jsonify("Welcome to the Netro Web3 Service")
 
 if __name__ == '__main__':
     app.run(debug=True)
