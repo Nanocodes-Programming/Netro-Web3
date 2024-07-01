@@ -80,7 +80,7 @@ tron-address-converter==1.0
 tronpy==0.5.0
 types-python-dateutil==2.9.0.20240316
 typing_extensions==4.11.0
-urllib3==1.26.18
+urllib3==1.26.19
 web3==6.11.0
 websockets==11.0.3
 Werkzeug==3.0.3
