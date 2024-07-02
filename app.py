@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from crypto_operations.accounts import get_accounts
-from crypto_operations.balances import balance_BTC, balance_ETH, balance_SOL, get_trx_balance, USDT_balance
+from crypto_operations.balances import balance_BTC, balance_ETH, balance_LTC, get_trx_balance, USDT_balance
 from crypto_operations.transfer import BTC_Transfer, ETH_Transfer, Sol_Transfer, sendUSDT
 from exchange_operations.swap_coin import trx_to_usdt, SOL_USDT, BTC_USDT, ETH_USDT
 from exchange_operations.exchange import USDTNGN
@@ -25,7 +25,7 @@ def get_currency_balance(currency):
     balance_functions = {
         'btc': balance_BTC,
         'eth': balance_ETH,
-        'sol': balance_SOL,
+        'ltc': balance_LTC,
         'usdt': USDT_balance
     }
     
