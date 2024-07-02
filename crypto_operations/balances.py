@@ -26,33 +26,21 @@ def balance_ETH(addr : str):
     result1 = web3.from_wei(balance_wei, 'ether')
     return result1
 
-# Function to get the balance of a Solana address
-def balance_SOL(addr : str):
-    # Set your Solana RPC URL
-    solana_rpc_url = os.getenv("SOLANA_RPC_URL", "https://api.mainnet-beta.solana.com")
-    # Prepare the JSON-RPC payload
-    payload = {
-        "jsonrpc": "2.0",
-        "id": 1,
-        "method": "getBalance",
-        "params": [addr]
-    }
-    # Send the request
-    response = requests.post(solana_rpc_url, json=payload)
-    # Check if the request was successful
-    if response.status_code == 200:
-        result = response.json()
-        if 'result' in result and 'value' in result['result']:
-            # The balance is returned in lamports, convert to SOL
-            balance_lamports = result['result']['value']
-            balance_sol = balance_lamports / 1e9 # 1 SOL = 1e9 lamports
-            return balance_sol
+# Function to get the balance of a Litecoin address
+def balance_LTC(addy):
+    # Fetch balance data from BlockCypher API
+    response = requests.get(f'https://api.blockcypher.com/v1/ltc/main/addrs/{addy}/balance')
+    if response.status_code != 200:
+        if response.status_code == 400:
+            print("Invalid LTC address.")
         else:
-            print("Error: Unable to retrieve balance.")
-            return None
-    else:
-        print(f"Error: Request failed with status code {response.status_code}.")
-        return None
+            print(f"Failed to retrieve balance. Error {response.status_code}. Please try again later.")
+        return
+
+    data = response.json()
+    balance = data['balance'] / 10 ** 8
+    return balance
+
 
 
 def USDT_balance( address: str):
