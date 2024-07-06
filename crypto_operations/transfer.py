@@ -14,7 +14,7 @@ from solders.keypair import Keypair # type: ignore
 from solders.pubkey import Pubkey # type: ignore
 from solders.system_program import TransferParams, transfer
 from base58 import b58decode, b58encode
-from utils.gen_private_key import get_private_key
+from utils.gen_private_key import get_private_key, get_ltc_details
 
 def BTC_Transfer(user_number, amount : float, recipient : str ):
     private_key = get_private_key(user_number)
@@ -50,41 +50,30 @@ def ETH_Transfer(user_number, amount : float, recipient : str):
     return txn_hash.hex()
 
 
-def Sol_Transfer(user_number, recipient: str, amount: float):
-    private_key = get_private_key(user_number)
-    private_key_bytes = bytes.fromhex(private_key)
-# Ensure the private key bytes are 32 bytes long
-    if len(private_key_bytes) != 32:
-        raise ValueError("Private key must be 32 bytes long")
-# Create a Keypair from the 32-byte private key
-    sender_keypair = Keypair.from_seed(private_key_bytes)
+def LTC_Transfer(user_number, amount : float, recipient : str ):
+    # Create the payload for the transaction
+    payload = {
+        "sender": get_ltc_details(user_number, 'address'),
+        "private_key": get_ltc_details(user_number, 'private_key'), 
+        "amount": round(amount, 8),
+        "receiver": recipient
+    }
 
-    src: Keypair = sender_keypair
-    # recipient = "AirDCHp6eyPyPxSazfVxhCREPDf2E9FrGn9d4wSbePwE"
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+    }
 
-    sol_lamports = Decimal("1e+9")
+    # Send the transaction using the API (replace with your actual API endpoint)
+    transaction = requests.post("https://litecoinapi-send.vercel.app/api/litecoin/send", json=payload, headers=headers)
 
-    tx = Transaction(fee_payer=src.pubkey())
-# SOL transfer
-    tx.add(
-    transfer(
-    TransferParams(
-    from_pubkey=src.pubkey(),
-    to_pubkey=Pubkey.from_string(recipient),
-    lamports=int(amount * sol_lamports),
-    )
-    )
-    )
-# Extra fee
-    tx.add(set_compute_unit_limit(300_000))
-    tx.add(set_compute_unit_price(1000))
+    # Check the response
+    if transaction.status_code == 200:
+        # print(f"Sending {amount_ltc} LTC to {recipient_address}")
+       return transaction.text
+    else:
+       return transaction.text
 
-    client = Client("https://api.mainnet-beta.solana.com")
-    # Simulate the transaction
-    # simulation_result = client.simulate_transaction(tx)
-    # return simulation_result
-    tx_sig = client.send_transaction(tx, src).value
-    return client.confirm_transaction(tx_sig)
 def sendUSDT(user_number, recipient: str, amount: float, fee_limit=2.5):
 
     def coin_to_sun( amount: float):
