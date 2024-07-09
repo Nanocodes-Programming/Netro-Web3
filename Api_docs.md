@@ -20,7 +20,7 @@ The base URL for this API is `https://web3-wallet-e40e6d4f61b9.herokuapp.com`.
   {
     "btc_address": "string",
     "eth_address": "string",
-    "sol_address": "string",
+    "ltc_address": "string",
     "trx_address": "string"
   }
   ```
@@ -86,19 +86,19 @@ The base URL for this API is `http://yourdomain.com`.
     }
     ```
 
-#### Get Solana (SOL) Address Balance
+#### Get litecoin (ltc) Address Balance
 
-- **URL**: `/balance/sol`
+- **URL**: `/balance/ltc`
 - **Method**: `GET`
-- **Description**: Get Solana (SOL) balance for a specific address.
+- **Description**: Get litecoin (ltc) balance for a specific address.
 - **Query Parameters**:
-  - `address` (string, required): Solana address for which balance is required.
+  - `address` (string, required): litecoin address for which balance is required.
 - **Success Response**:
   - **Code**: `200 OK`
   - **Content**:
     ```json
     {
-      "sol_balance": "balance"
+      "ltc_balance": "balance"
     }
     ```
 - **Error Response**:
@@ -221,11 +221,11 @@ The base URL for this API is `http://yourdomain.com`.
   }
   ```
 
-#### Solana (SOL) Transfer
+#### litecoin (ltc) Transfer
 
-- **Endpoint**: `/sol-transfer`
+- **Endpoint**: `/ltc-transfer`
 - **Method**: `POST`
-- **Description**: Initiate a Solana (SOL) transfer.
+- **Description**: Initiate a litecoin (ltc) transfer.
 - **Request Body**:
   ```json
   {
@@ -286,11 +286,11 @@ The base URL for this API is `http://yourdomain.com`.
   }
   ```
 
-##### SOL to USDT
+##### ltc to USDT
 
-- **Endpoint**: `/sol-to-usdt`
+- **Endpoint**: `/ltc-to-usdt`
 - **Method**: `POST`
-- **Description**: Perform SOL (Solana) to USDT (Tether) conversion.
+- **Description**: Perform ltc (litecoin) to USDT (Tether) conversion.
 - **Request Body**:
   ```json
   {

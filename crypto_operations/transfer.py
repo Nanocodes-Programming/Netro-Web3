@@ -6,13 +6,7 @@ from loguru import logger
 from tronpy.keys import PrivateKey
 from tronpy.providers import HTTPProvider
 from tronpy import Tron
-from decimal import Decimal
-from solana.rpc.api import Client
-from solana.transaction import Transaction
-from solders.compute_budget import set_compute_unit_limit, set_compute_unit_price # type: ignore
-from solders.keypair import Keypair # type: ignore
-from solders.pubkey import Pubkey # type: ignore
-from solders.system_program import TransferParams, transfer
+import requests
 from base58 import b58decode, b58encode
 from utils.gen_private_key import get_private_key, get_ltc_details
 

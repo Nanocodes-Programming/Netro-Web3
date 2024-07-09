@@ -48,31 +48,26 @@ def get_ethereum_transactions(address):
 
 
 
-def get_solana_transactions(address):
-    url = f"https://api.solana.fm/v0/accounts/{address}/transfers?inflow=true&outflow=true&limit=12"
-
+def get_litecoin_transactions(address):
+    url = f"https://api.blockcypher.com/v1/ltc/main/addrs/{address}/full"
     response = requests.get(url)
-    data = response.json()
-    transfers = []
-    for transaction in data["results"]:
-        for transfer in transaction["data"]:
-            if transfer["action"] == "transfer":
-                if transfer["source"] == address:
-                    transfers.append({
-                        "direction": "outgoing",
-                        "amount": int(transfer["amount"])/1000000000,
-                        "address_to": transfer["destination"],
-                        "address_from": transfer["source"]
-                    })
-                elif transfer["destination"] == address:
-                    transfers.append({
-                        "direction": "incoming",
-                        "amount": int(transfer["amount"])/1000000000,
-                        "address_to": transfer["destination"],
-                        "address_from": transfer["source"]
-                    })
-    return transfers #latest transactions first, note transactions might take some time to appear, server issues
-
+    transactions = response.json().get('txs', [])
+    result = []
+    for tx in transactions:
+        for output in tx['outputs']:
+            if output['addresses'] is not None and address in output['addresses']:
+                result.append({
+                    "type": "Incoming",
+                    "amount": int(output['value']) / 100000000,
+                    # "address": output['addresses'][0]
+                })
+            elif output['addresses'] is not None:
+                result.append({
+                    "type": "Outgoing",
+                    "amount": int(output['value']) / 100000000,
+                    "address": output['addresses'][0]
+                })
+    return result #latest transactions first,
 
 
 # # Example usage

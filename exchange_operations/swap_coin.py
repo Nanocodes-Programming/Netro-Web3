@@ -93,16 +93,16 @@ def trx_to_usdt(user_number, amount_trx: float, fee_limit=250):
 
     return tx_id, result['receipt']['result'], result
 
-def SOL_USDT(user_number, amount : float) :
+def LTC_USDT(user_number, amount : float) :
 
     addresses = get_accounts(user_number)
     Tron_Address = addresses['tron_address']
     url = "https://api.changenow.io/v2/exchange"
 
     data = {
-        "fromCurrency": "sol",
+        "fromCurrency": "ltc",
         "toCurrency": "usdt",
-        "fromNetwork": "sol",
+        "fromNetwork": "ltc",
         "toNetwork": "trx",
         "fromAmount": amount, #"Amount is less then minimal: 0.0006343 BTC"
         "toAmount": "",
@@ -130,7 +130,7 @@ def SOL_USDT(user_number, amount : float) :
     receiving_amount = dat['toAmount']
     track =  dat['id']
     print(" You will be receiving : {} Usdt".format(receiving_amount))
-    transfer.Sol_Transfer(user_number, amount, recipient)
+    transfer.LTC_Transfer(user_number, amount, recipient)
     return track, response.text
 
 

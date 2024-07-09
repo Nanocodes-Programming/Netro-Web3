@@ -1,6 +1,6 @@
 ## Documentation: Cryptocurrency Address Generator
 
-This Python script `accounts.py` is designed to generate cryptocurrency addresses for various blockchains, including Ethereum (ETH), Bitcoin (BTC), Binance Smart Chain (BSC), Tron (TRC), and Solana. It leverages different libraries and utilities to create addresses based on a given user number.
+This Python script `accounts.py` is designed to generate cryptocurrency addresses for various blockchains, including Ethereum (ETH), Bitcoin (BTC), Binance Smart Chain (BSC), Tron (TRC), and litecoin. It leverages different libraries and utilities to create addresses based on a given user number.
 
 ### Dependencies
 
@@ -31,8 +31,8 @@ This function takes a `user_number` as input and generates cryptocurrency addres
 5. **Tron (TRC) Address**
    - The Ethereum address is converted to a Tron address using `TronConverter.from_hex(eth_address)`.
 
-6. **Solana Address**
-   - The private key is encoded in base58 format using `base58.b58encode(private_key)` and then decoded to extract the public key (`keypair[32:]`). The Solana address is derived from the public key.
+6. **litecoin Address**
+   - The private key is encoded in base58 format using `base58.b58encode(private_key)` and then decoded to extract the public key (`keypair[32:]`). The litecoin address is derived from the public key.
 
 ### Utility Function: `get_private_key(user_number)`
 
@@ -43,7 +43,7 @@ This function generates a private key based on a `user_number` using a predefine
 To use the `get_accounts(user_number)` function:
 
 1. Provide a `user_number` (an integer) as input.
-2. Call `get_accounts(user_number)` to obtain a dictionary containing cryptocurrency addresses for Ethereum, Bitcoin, Binance Smart Chain, Tron, and Solana.
+2. Call `get_accounts(user_number)` to obtain a dictionary containing cryptocurrency addresses for Ethereum, Bitcoin, Binance Smart Chain, Tron, and litecoin.
 
 Example:
 ```python

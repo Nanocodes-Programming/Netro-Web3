@@ -1,13 +1,13 @@
 from flask import Flask, jsonify, request
 from crypto_operations.accounts import get_accounts
-from crypto_operations.balances import balance_BTC, balance_ETH, balance_LTC, get_trx_balance, USDT_balance
-from crypto_operations.transfer import BTC_Transfer, ETH_Transfer, Sol_Transfer, sendUSDT
-from exchange_operations.swap_coin import trx_to_usdt, SOL_USDT, BTC_USDT, ETH_USDT
+from crypto_operations.balances import balance_BTC, balance_ETH, balance_LTC, USDT_balance
+from crypto_operations.transfer import BTC_Transfer, ETH_Transfer,  LTC_Transfer, sendUSDT
+from exchange_operations.swap_coin import trx_to_usdt, LTC_USDT, BTC_USDT, ETH_USDT
 from exchange_operations.exchange import USDTNGN
 from exchange_operations.swap_estimate import get_estimate
 from exchange_operations.swap_status import get_status
 from api_operations.coin_prices import get_usd_prices, get_naira_prices
-from crypto_operations.get_transactions import (get_bitcoin_transactions,get_usdt_transactions,get_solana_transactions, get_ethereum_transactions)
+from crypto_operations.get_transactions import (get_bitcoin_transactions,get_usdt_transactions,get_litecoin_transactions, get_ethereum_transactions)
 
 app = Flask(__name__)
 
@@ -45,7 +45,7 @@ def currency_transfer(currency):
     transfer_functions = {
         'btc': BTC_Transfer,
         'eth': ETH_Transfer,
-        'sol': Sol_Transfer,
+        'ltc': LTC_Transfer,
         'usdt': sendUSDT
     }
     
@@ -63,7 +63,7 @@ def coin_to_coin(from_coin, to_coin):
     
     swap_functions = {
         'trx-to-usdt': trx_to_usdt,
-        'sol-to-usdt': SOL_USDT,
+        'ltc-to-usdt': LTC_USDT,
         'btc-to-usdt': BTC_USDT,
         'eth-to-usdt': ETH_USDT
     }
@@ -109,7 +109,7 @@ def get_all_balances():
     balance_functions = {
         'btc': balance_BTC,
         'eth': balance_ETH,
-        'sol': balance_SOL,
+        'ltc': balance_LTC,
         'usdt': USDT_balance
     }
     errors = {}
@@ -170,7 +170,7 @@ def get_currency_transactions(currency):
         'btc': get_bitcoin_transactions,
         'eth': get_ethereum_transactions,
         'usdt': get_usdt_transactions,
-        'solana': get_solana_transactions
+        'litecoin': get_litecoin_transactions
     }
     
     if currency in transaction_functions:
@@ -189,7 +189,7 @@ def get_transactions(currency):
         'btc': get_bitcoin_transactions,
         'eth': get_ethereum_transactions,
         'usdt': get_usdt_transactions,
-        'solana': get_solana_transactions
+        'litecoin': get_litecoin_transactions
     }
 
     for currency, address in data.items():

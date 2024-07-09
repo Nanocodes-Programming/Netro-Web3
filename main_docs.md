@@ -23,7 +23,7 @@ The base URL for this API is `https://web3-wallet-e40e6d4f61b9.herokuapp.com`.
     "btc_address": "1P....",
     "bsc_address": "0x....",
     "tron_address": "TQ....",
-    "sol_address": "5P...."
+    "ltc_address": "5P...."
   }
 
 #### **2. Get Currency Balance**
@@ -31,7 +31,7 @@ The base URL for this API is `https://web3-wallet-e40e6d4f61b9.herokuapp.com`.
 - **Method**: `GET`
 - **Description**: Fetches the balance of the specified cryptocurrency.
 - **Parameters**:
-  - `currency`: Supported values are `btc`, `eth`, `sol`, `trx`, `usdt`.
+  - `currency`: Supported values are `btc`, `eth`, `ltc`, `trx`, `usdt`.
   - `address`: Address of the cryptocurrency wallet.
 - **Response**:
   - **Success**: Returns JSON with the balance of the specified currency.
@@ -139,7 +139,7 @@ Certainly! Here's the detailed API documentation for the endpoint to retrieve mu
 - **Method**: `POST`
 - **Description**: Retrieves balances for multiple cryptocurrencies in a single request.
 - **Request Body**: JSON object with currency names as keys and wallet addresses as values.
-- **Supported Currencies**: `btc`, `eth`, `sol`, `trx`, `usdt`
+- **Supported Currencies**: `btc`, `eth`, `ltc`, `trx`, `usdt`
 - **Request Format**:
   - Keys: Names of the cryptocurrencies.
   - Values: Corresponding wallet addresses for each cryptocurrency.
@@ -155,7 +155,7 @@ Certainly! Here's the detailed API documentation for the endpoint to retrieve mu
     "btc": "1P...",
     "eth": "0x...",
     "trx": "TQ...",
-    "sol": "5P..."
+    "ltc": "5P..."
   }
   ```
 - **Example Response**:
@@ -164,7 +164,7 @@ Certainly! Here's the detailed API documentation for the endpoint to retrieve mu
     "balances": {
       "btc": 0.5,
       "eth": 2.5,
-      "sol": 100.0,
+      "ltc": 100.0,
       "trx": 1500
     },
     "errors": {
@@ -242,7 +242,7 @@ Certainly! Here's the detailed API documentation for the endpoint to retrieve mu
 - **Method**: `GET`
 - **Description**: Retrieves transaction details for a specific cryptocurrency.
 - **URL Parameters**:
-  - `currency` (string): Cryptocurrency symbol (e.g., `btc`, `eth`, `tron`, `usdt`, `solana`).
+  - `currency` (string): Cryptocurrency symbol (e.g., `btc`, `eth`, `tron`, `usdt`, `litecoin`).
 - **Query Parameters**:
   - `address` (string, required): Cryptocurrency address for which transactions are to be retrieved.
 - **Response**:
@@ -281,7 +281,7 @@ Certainly! Here's the detailed API documentation for the endpoint to retrieve mu
       },
       ...
     ],
-    "solana_transactions": [
+    "litecoin_transactions": [
       {
         "direction": "incoming/outgoing",
         "amount": "number",
@@ -297,7 +297,7 @@ Certainly! Here's the detailed API documentation for the endpoint to retrieve mu
 - **Method**: `POST`
 - **Description**: Retrieves transaction histories for specified cryptocurrencies.
 - **Request Body**: JSON object with cryptocurrency names as keys and their corresponding wallet addresses as values.
-- **Supported Currencies**: `btc` (Bitcoin), `eth` (Ethereum), `tron` (TRON), `usdt` (Tether), and `solana` (Solana).
+- **Supported Currencies**: `btc` (Bitcoin), `eth` (Ethereum), `tron` (TRON), `usdt` (Tether), and `litecoin` (litecoin).
 
 #### **Request Format**:
 - Keys: Cryptocurrency identifiers (e.g., 'btc', 'eth').
@@ -316,7 +316,7 @@ Content-Type: application/json
   "btc": "1P...",
   "eth": "0x...",
   "tron": "TQ...",
-  "solana": "5P...",
+  "litecoin": "5P...",
   "usdt": "TR..."
 }
 ```
@@ -351,7 +351,7 @@ Content-Type: application/json
         "to": "TQ..."
       }
     ],
-    "solana": [
+    "litecoin": [
       {
         "direction": "incoming",
         "amount": 50,
