@@ -1,6 +1,10 @@
 from web3 import Web3
-from bip_utils import Bip39MnemonicGenerator, Bip39SeedGenerator, Bip44, Bip44Coins, Bip44Changes
-seed_phrase = "space cook alcohol item save mixture basket public nothing oppose infant winner"
+from web3 import Web3
+import os
+from dotenv import load_dotenv
+load_dotenv()
+from bip_utils import  Bip39SeedGenerator, Bip44, Bip44Coins, Bip44Changes
+seed_phrase = os.getenv("SEED")
 def get_private_key(user_number):
     w3 = Web3()
     # This is an example seed phrase
